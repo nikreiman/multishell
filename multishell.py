@@ -9,15 +9,19 @@ def exec_command(command, directories):
     old_pwd = os.getcwd()
     for directory in directories:
         os.chdir(directory)
-        result = ""
-        try:
-            subprocess.check_output(
-                command,
-                shell=True,
-            )
-            print(f"✅ {directory}: {result}")
-        except subprocess.CalledProcessError as e:
-            print(f"❌ {directory}: {result} ({e.returncode})")
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            shell=True,
+        )
+        stderr = result.stderr or "(None)"
+        stdout = result.stdout or "(None)"
+        output = f"stdout: {stdout}, stderr: {stderr}"
+        successful = (result.returncode == 0)
+        if not successful:
+            output += f", return code: {result.returncode}"
+        status_emoji = "✅" if successful else "❌"
+        print(f"{status_emoji} {directory}: {output}")
         os.chdir(old_pwd)
 
 
