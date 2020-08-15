@@ -15,30 +15,40 @@ def exec_command(command, directories, verbose):
             shell=True,
         )
 
-        successful = (result.returncode == 0)
-        stderr = "(None)"
-        if result.stderr:
-            stderr = f"'{result.stderr.decode().rstrip()}'"
-        stdout = "(None)"
-        if result.stdout:
-            stdout = f"'{result.stdout.decode().rstrip()}'"
-        output = []
-
-        if successful:
-            output.append("✅")
-            output.append(directory)
-            if verbose:
-                output.append(f"[stdout] {stdout}")
-                output.append(f"[stderr] {stderr}")
-        else:
-            output.append("❌")
-            output.append(directory)
-            output.append(f"[stdout] {stdout}")
-            output.append(f"[stderr] {stderr}")
-            output.append(f"return code {result.returncode}")
-        print(": ".join(output))
-
+        print_output(
+            result.returncode == 0,
+            directory,
+            result.stdout,
+            result.stderr,
+            result.returncode,
+            verbose,
+        )
         os.chdir(old_pwd)
+
+
+def format_stream(name, contents):
+    return f"{name}: '{contents.decode().rstrip()}'" if contents else f"{name}: (None)"
+
+
+def print_output(successful, directory, stdout, stderr, returncode, verbose):
+    output = []
+
+    if successful:
+        output.append("✅")
+        output.append(directory)
+        if verbose:
+            output.append("-")
+            output.append(format_stream("stdout", stdout))
+            output.append(format_stream("stderr", stderr))
+    else:
+        output.append("❌")
+        output.append(directory)
+        output.append("-")
+        output.append(format_stream("stdout", stdout))
+        output.append(format_stream("stderr", stderr))
+        output.append(f"return code: {returncode}")
+
+    print(" ".join(output))
 
 
 def get_directories(args):
