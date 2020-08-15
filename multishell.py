@@ -5,7 +5,7 @@ import os
 import subprocess
 
 
-def exec_command(command, directories, verbose):
+def exec_command(command, directories, keep_executing, verbose):
     old_pwd = os.getcwd()
     for directory in directories:
         os.chdir(directory)
@@ -23,7 +23,11 @@ def exec_command(command, directories, verbose):
             result.returncode,
             verbose,
         )
+
         os.chdir(old_pwd)
+
+        if not keep_executing:
+            return
 
 
 def format_stream(name, contents):
@@ -75,13 +79,13 @@ def main(args):
         raise ValueError("No directories!")
 
     if args.script:
-        return run_script(directories, args.script, args.verbose)
+        return run_script(directories, args.script, args.keep_executing, args.verbose)
 
     done = False
     while not done:
         try:
             command = input("multishell$ ")
-            exec_command(command, directories, args.verbose)
+            exec_command(command, directories, args.keep_executing, args.verbose)
         except (EOFError, KeyboardInterrupt):
             print("Quit")
             done = True
@@ -97,6 +101,13 @@ def parse_args():
         "--all",
         action='store_true',
         help="Add all directories in the currect path",
+    )
+    parser.add_argument(
+        "-c",
+        "--continue",
+        action='store_true',
+        dest="keep_executing",
+        help="Continue executing in spite of failures.",
     )
     parser.add_argument(
         "-d",
@@ -123,7 +134,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def run_script(directories, script, verbose):
+def run_script(directories, script, keep_executing, verbose):
     with open(script, "r") as fp:
         lines = [x.rstrip() for x in fp.readlines()]
         if lines[0].startswith("#!"):
@@ -131,7 +142,7 @@ def run_script(directories, script, verbose):
 
     for line in lines:
         print(f"🏃 {line}")
-        exec_command(line, directories, verbose)
+        exec_command(line, directories, keep_executing, verbose)
 
 
 if __name__ == "__main__":
