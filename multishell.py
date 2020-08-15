@@ -74,6 +74,9 @@ def main(args):
     if len(directories) == 0:
         raise ValueError("No directories!")
 
+    if args.script:
+        return run_script(directories, args.script, args.verbose)
+
     done = False
     while not done:
         try:
@@ -106,6 +109,11 @@ def parse_args():
         help="File containing a list of directories, one per line.",
     )
     parser.add_argument(
+        "-s",
+        "--script",
+        help="Execute commands from this script file.",
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action='store_true',
@@ -113,6 +121,17 @@ def parse_args():
     )
 
     return parser.parse_args()
+
+
+def run_script(directories, script, verbose):
+    with open(script, "r") as fp:
+        lines = [x.rstrip() for x in fp.readlines()]
+        if lines[0].startswith("#!"):
+            lines.pop(0)
+
+    for line in lines:
+        print(f"🏃 {line}")
+        exec_command(line, directories, verbose)
 
 
 if __name__ == "__main__":
