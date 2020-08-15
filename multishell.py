@@ -5,7 +5,7 @@ import os
 import subprocess
 
 
-def exec_command(command, directories):
+def exec_command(command, directories, verbose):
     old_pwd = os.getcwd()
     for directory in directories:
         os.chdir(directory)
@@ -14,14 +14,30 @@ def exec_command(command, directories):
             capture_output=True,
             shell=True,
         )
-        stderr = result.stderr or "(None)"
-        stdout = result.stdout or "(None)"
-        output = f"stdout: {stdout}, stderr: {stderr}"
+
         successful = (result.returncode == 0)
-        if not successful:
-            output += f", return code: {result.returncode}"
-        status_emoji = "✅" if successful else "❌"
-        print(f"{status_emoji} {directory}: {output}")
+        stderr = "(None)"
+        if result.stderr:
+            stderr = f"'{result.stderr.decode().rstrip()}'"
+        stdout = "(None)"
+        if result.stdout:
+            stdout = f"'{result.stdout.decode().rstrip()}'"
+        output = []
+
+        if successful:
+            output.append("✅")
+            output.append(directory)
+            if verbose:
+                output.append(f"[stdout] {stdout}")
+                output.append(f"[stderr] {stderr}")
+        else:
+            output.append("❌")
+            output.append(directory)
+            output.append(f"[stdout] {stdout}")
+            output.append(f"[stderr] {stderr}")
+            output.append(f"return code {result.returncode}")
+        print(": ".join(output))
+
         os.chdir(old_pwd)
 
 
@@ -47,7 +63,7 @@ def main(args):
     while not done:
         try:
             command = input("multishell$ ")
-            exec_command(command, directories)
+            exec_command(command, directories, args.verbose)
         except (EOFError, KeyboardInterrupt):
             print("Quit")
             done = True
@@ -67,6 +83,12 @@ def parse_args():
         "-f",
         "--file",
         help="File containing a list of directories, one per line.",
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action='store_true',
+        help="Show output from successful commands.",
     )
 
     return parser.parse_args()
