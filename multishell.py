@@ -44,6 +44,11 @@ def exec_command(command, directories, verbose):
 def get_directories(args):
     directories = []
 
+    if args.all:
+        for i in sorted(os.listdir()):
+            if os.path.isdir(i):
+                directories.append(i)
+
     if args.directories:
         directories.extend(args.directories.split(","))
 
@@ -74,6 +79,12 @@ def parse_args():
         description="Interactive shell to run commands in multiple directories",
     )
 
+    parser.add_argument(
+        "-a",
+        "--all",
+        action='store_true',
+        help="Add all directories in the currect path",
+    )
     parser.add_argument(
         "-d",
         "--directories",
