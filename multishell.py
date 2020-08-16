@@ -11,8 +11,9 @@ def exec_command(command, directories, keep_executing, verbose):
         os.chdir(directory)
         result = subprocess.run(command, capture_output=True, shell=True)
 
+        successful = (result.returncode == 0)
         print_output(
-            result.returncode == 0,
+            successful,
             directory,
             result.stdout,
             result.stderr,
@@ -22,7 +23,7 @@ def exec_command(command, directories, keep_executing, verbose):
 
         os.chdir(old_pwd)
 
-        if not keep_executing:
+        if not successful and not keep_executing:
             return
 
 
