@@ -9,11 +9,7 @@ def exec_command(command, directories, keep_executing, verbose):
     old_pwd = os.getcwd()
     for directory in directories:
         os.chdir(directory)
-        result = subprocess.run(
-            command,
-            capture_output=True,
-            shell=True,
-        )
+        result = subprocess.run(command, capture_output=True, shell=True)
 
         print_output(
             result.returncode == 0,
@@ -67,7 +63,7 @@ def get_directories(args):
         directories.extend(args.directories.split(","))
 
     if args.file:
-        with open(args.file, 'r') as dirs_file:
+        with open(args.file, "r") as dirs_file:
             directories.extend(dirs_file.readlines())
 
     return [x.rstrip() for x in directories]
@@ -79,7 +75,9 @@ def main(args):
         raise ValueError("No directories!")
 
     if args.batch_file:
-        return run_script(directories, args.batch_file, args.keep_executing, args.verbose)
+        return run_script(
+            directories, args.batch_file, args.keep_executing, args.verbose
+        )
 
     done = False
     while not done:
@@ -99,7 +97,7 @@ def parse_args():
     parser.add_argument(
         "-a",
         "--all",
-        action='store_true',
+        action="store_true",
         help="Add all directories in the currect path",
     )
     parser.add_argument(
@@ -110,24 +108,20 @@ def parse_args():
     parser.add_argument(
         "-c",
         "--continue",
-        action='store_true',
+        action="store_true",
         dest="keep_executing",
         help="Continue executing in spite of failures.",
     )
     parser.add_argument(
-        "-d",
-        "--directories",
-        help="List of comma-separated directories.",
+        "-d", "--directories", help="List of comma-separated directories.",
     )
     parser.add_argument(
-        "-f",
-        "--file",
-        help="File containing a list of directories, one per line.",
+        "-f", "--file", help="File containing a list of directories, one per line.",
     )
     parser.add_argument(
         "-v",
         "--verbose",
-        action='store_true',
+        action="store_true",
         help="Show output from successful commands.",
     )
 
