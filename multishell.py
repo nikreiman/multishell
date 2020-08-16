@@ -69,7 +69,7 @@ def get_directories(args):
     if args.file:
         with open(args.file, 'r') as dirs_file:
             directories.extend(dirs_file.readlines())
-    
+
     return [x.rstrip() for x in directories]
 
 
