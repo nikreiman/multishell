@@ -78,8 +78,8 @@ def main(args):
     if len(directories) == 0:
         raise ValueError("No directories!")
 
-    if args.script:
-        return run_script(directories, args.script, args.keep_executing, args.verbose)
+    if args.batch_file:
+        return run_script(directories, args.batch_file, args.keep_executing, args.verbose)
 
     done = False
     while not done:
@@ -103,6 +103,11 @@ def parse_args():
         help="Add all directories in the currect path",
     )
     parser.add_argument(
+        "-b",
+        "--batch-file",
+        help="Execute commands from this file (one command per line).",
+    )
+    parser.add_argument(
         "-c",
         "--continue",
         action='store_true',
@@ -120,11 +125,6 @@ def parse_args():
         help="File containing a list of directories, one per line.",
     )
     parser.add_argument(
-        "-s",
-        "--script",
-        help="Execute commands from this script file.",
-    )
-    parser.add_argument(
         "-v",
         "--verbose",
         action='store_true',
@@ -134,8 +134,8 @@ def parse_args():
     return parser.parse_args()
 
 
-def run_script(directories, script, keep_executing, verbose):
-    with open(script, "r") as fp:
+def run_script(directories, batch_file, keep_executing, verbose):
+    with open(batch_file, "r") as fp:
         lines = [x.rstrip() for x in fp.readlines()]
         if lines[0].startswith("#!"):
             lines.pop(0)
