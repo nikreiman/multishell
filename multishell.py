@@ -35,7 +35,7 @@ def print_output(successful, directory, stdout, stderr, returncode, verbose):
     output = []
 
     if successful:
-        output.append("✅")
+        output.append("✔ ")
         output.append(directory)
         if verbose:
             output.append("-")
