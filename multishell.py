@@ -40,7 +40,8 @@ def get_directories(args):
                 directories.append(i)
 
     if args.directories:
-        directories.extend(args.directories.split(","))
+        for arg_dir in args.directories:
+            directories.extend(arg_dir.split(","))
 
     if args.file:
         with open(args.file, "r") as dirs_file:
@@ -93,7 +94,10 @@ def parse_args():
         help="Continue executing in spite of failures.",
     )
     parser.add_argument(
-        "-d", "--directories", help="List of comma-separated directories.",
+        "-d",
+        "--directories",
+        action="append",
+        help="List of comma-separated directories. May also be given multiple times.",
     )
     parser.add_argument(
         "-f",
