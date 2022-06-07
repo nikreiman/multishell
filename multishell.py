@@ -31,27 +31,6 @@ def format_stream(name, contents):
     return f"{name}: '{contents.decode().rstrip()}'" if contents else f"{name}: (None)"
 
 
-def print_output(successful, directory, stdout, stderr, returncode, verbose):
-    output = []
-
-    if successful:
-        output.append("✔ ")
-        output.append(directory)
-        if verbose:
-            output.append("-")
-            output.append(format_stream("stdout", stdout))
-            output.append(format_stream("stderr", stderr))
-    else:
-        output.append("❌")
-        output.append(directory)
-        output.append("-")
-        output.append(format_stream("stdout", stdout))
-        output.append(format_stream("stderr", stderr))
-        output.append(f"return code: {returncode}")
-
-    print(" ".join(output))
-
-
 def get_directories(args):
     directories = []
 
@@ -127,6 +106,27 @@ def parse_args():
     )
 
     return parser.parse_args()
+
+
+def print_output(successful, directory, stdout, stderr, returncode, verbose):
+    output = []
+
+    if successful:
+        output.append("✔ ")
+        output.append(directory)
+        if verbose:
+            output.append("-")
+            output.append(format_stream("stdout", stdout))
+            output.append(format_stream("stderr", stderr))
+    else:
+        output.append("❌")
+        output.append(directory)
+        output.append("-")
+        output.append(format_stream("stdout", stdout))
+        output.append(format_stream("stderr", stderr))
+        output.append(f"return code: {returncode}")
+
+    print(" ".join(output))
 
 
 def run_script(directories, batch_file, keep_executing, verbose):
