@@ -11,7 +11,7 @@ def exec_command(command, directories, keep_executing, verbose):
         os.chdir(directory)
         result = subprocess.run(command, capture_output=True, shell=True)
 
-        successful = (result.returncode == 0)
+        successful = result.returncode == 0
         print_output(
             successful,
             directory,
@@ -96,7 +96,9 @@ def parse_args():
         "-d", "--directories", help="List of comma-separated directories.",
     )
     parser.add_argument(
-        "-f", "--file", help="File containing a list of directories, one per line.",
+        "-f",
+        "--file",
+        help="File containing a list of directories, one per line.",
     )
     parser.add_argument(
         "-v",
